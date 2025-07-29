@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galeri | Sakarya Büyükşehir Belediyesi</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .gallery-slider {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .carousel-item img {
+      width: 100%;
+      height: 500px;
+      object-fit: cover;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    
+    .carousel-item img:hover {
+      transform: scale(1.02);
+    }
+    
+    .carousel-caption {
+      background: rgba(0,0,0,0.7);
+      border-radius: 10px;
+      padding: 15px;
+    }
+    
+    .carousel-indicators button {
+      background-color: #0d6efd;
+      border: none;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      margin: 0 5px;
+    }
+    
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+      background-color: rgba(0,0,0,0.5);
+      border-radius: 50%;
+      padding: 20px;
+    }
+    
+    /* Grid Gallery */
+    .grid-gallery {
+      margin-top: 50px;
+    }
+    
+    .grid-item {
+      position: relative;
+      overflow: hidden;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .grid-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    
+    .grid-item img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    
+    .grid-item:hover img {
+      transform: scale(1.1);
+    }
+    
+    .grid-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .grid-item:hover .grid-overlay {
+      opacity: 1;
+    }
+    
+    .overlay-content {
+      text-align: center;
+      padding: 20px;
+    }
+    
+    /* Modal Styles */
+    .modal-dialog {
+      max-width: 90vw;
+      max-height: 90vh;
+    }
+    
+    .modal-content {
+      background: transparent;
+      border: none;
+    }
+    
+    .modal-body {
+      padding: 0;
+      position: relative;
+    }
+    
+    .modal-image {
+      width: 100%;
+      max-height: 80vh;
+      object-fit: contain;
+      border-radius: 10px;
+    }
+    
+    .modal-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.8);
+      border: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .modal-nav:hover {
+      background: rgba(255,255,255,1);
+      transform: translateY(-50%) scale(1.1);
+    }
+    
+    .modal-nav.prev {
+      left: 10px;
+    }
+    
+    .modal-nav.next {
+      right: 10px;
+    }
+    
+    .modal-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(255,255,255,0.8);
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 10;
+    }
+    
+    .modal-info {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 20px;
+      border-radius: 0 0 10px 10px;
+    }
+    
+    /* Thumbnail Gallery */
+    .thumbnail-gallery {
+      margin-top: 30px;
+    }
+    
+    .thumbnail-item {
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      border: 3px solid transparent;
+      border-radius: 8px;
+      position: relative;
+    }
+    
+    .thumbnail-item:hover {
+      transform: scale(1.05);
+      border-color: #0d6efd;
+    }
+    
+    .thumbnail-item.active {
+      border-color: #0d6efd;
+    }
+    
+    .thumbnail-item img {
+      width: 100%;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+    
+    /* Zoom Effect */
+    .zoom-indicator {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 5px;
+      border-radius: 3px;
+      font-size: 12px;
+    }
+    
+    /* Loading Animation */
+    .loading {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 18px;
+    }
+    
+    .spinner {
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top: 3px solid white;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">SBB Bilgi İşlem</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">Anasayfa</a></li>
+          <li class="nav-item"><a class="nav-link" href="hakkimizda.html">Hakkımızda</a></li>
+          <li class="nav-item"><a class="nav-link" href="mudurlukler.html">Müdürlüklerimiz</a></li>
+          <li class="nav-item"><a class="nav-link" href="projeler.html">Projelerimiz</a></li>
+          <li class="nav-item"><a class="nav-link active" href="galeri.html">Galeri</a></li>
+          <li class="nav-item"><a class="nav-link" href="iletisim.html">İletişim</a></li>
+          <li class="nav-item"><a class="nav-link" href="login.php">Giriş</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- SAYFA İÇERİĞİ -->
+  <div class="container mt-5">
+    <h1 class="text-center mb-5">Galeri</h1>
+    
+    <!-- Ana Slider -->
+    <div class="gallery-slider">
+      <div id="galleryCarousel" class="carousel slide" data-bs-ride="carousel">
+        
+        <!-- Göstergeler (Indicators) -->
+        <div class="carousel-indicators">
+          <button type="button" data-bs-target="#galleryCarousel" data-bs-slide-to="0" class="active"></button>
+          <button type="button" data-bs-target="#galleryCarousel" data-bs-slide-to="1"></button>
+          <button type="button" data-bs-target="#galleryCarousel" data-bs-slide-to="2"></button>
+          <button type="button" data-bs-target="#galleryCarousel" data-bs-slide-to="3"></button>
+          <button type="button" data-bs-target="#galleryCarousel" data-bs-slide-to="4"></button>
+        </div>
+
+        <!-- Slider İçeriği -->
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img src="https://picsum.photos/900/500?random=1" alt="Belediye Binası" 
+                 data-bs-toggle="modal" data-bs-target="#imageModal" 
+                 data-image="https://picsum.photos/1200/800?random=1"
+                 data-title="Belediye Ana Binası"
+                 data-description="Sakarya Büyükşehir Belediyesi modern hizmet binası. 2020 yılında hizmete açılan bu modern yapı, çevre dostu teknolojiler ile inşa edilmiştir.">
+            <div class="carousel-caption d-none d-md-block">
+              <h5>Belediye Ana Binası</h5>
+              <p>Sakarya Büyükşehir Belediyesi modern hizmet binası</p>
+              <small>📷 Büyük görüntülemek için tıklayın</small>
+            </div>
+          </div>
+          
+          <div class="carousel-item">
+            <img src="https://picsum.photos/900/500?random=2" alt="Teknoloji Merkezi"
+                 data-bs-toggle="modal" data-bs-target="#imageModal"
+                 data-image="https://picsum.photos/1200/800?random=2"
+                 data-title="Teknoloji ve İnovasyon Merkezi"
+                 data-description="Son teknoloji ile donatılmış inovasyon merkezimiz. Dijital dönüşüm projelerimizin merkezinde yer almaktadır.">
+            <div class="carousel-caption d-none d-md-block">
+              <h5>Teknoloji ve İnovasyon Merkezi</h5>
+              <p>Gelişmiş teknoloji altyapımız ile hizmet veriyoruz</p>
+              <small>📷 Büyük görüntülemek için tıklayın</small>
+            </div>
+          </div>
+          
+          <div class="carousel-item">
+            <img src="https://picsum.photos/900/500?random=3" alt="Bilgi İşlem Merkezi"
+                 data-bs-toggle="modal" data-bs-target="#imageModal"
+                 data-image="https://picsum.photos/1200/800?random=3"
+                 data-title="Bilgi İşlem Daire Başkanlığı"
+                 data-description="Şehrin tüm dijital hizmetlerini koordine eden bilgi işlem merkezimiz.">
+            <div class="carousel-caption d-none d-md-block">
+              <h5>Bilgi İşlem Daire Başkanlığı</h5>
+              <p>Şehrin dijital dönüşümünde öncü rol oynuyoruz</p>
+              <small>📷 Büyük görüntülemek için tıklayın</small>
+            </div>
+          </div>
+          
+          <div class="carousel-item">
+            <img src="https://picsum.photos/900/500?random=4" alt="Toplantı Salonu"
+                 data-bs-toggle="modal" data-bs-target="#imageModal"
+                 data-image="https://picsum.photos/1200/800?random=4"
+                 data-title="Modern Toplantı Salonları"
+                 data-description="100 kişi kapasiteli konferans salonumuz, en son ses ve görüntü teknolojileri ile donatılmıştır.">
+            <div class="carousel-caption d-none d-md-block">
+              <h5>Modern Toplantı Salonları</h5>
+              <p>İleri teknoloji ile donatılmış konferans alanlarımız</p>
+              <small>📷 Büyük görüntülemek için tıklayın</small>
+            </div>
+          </div>
+          
+          <div class="carousel-item">
+            <img src="https://picsum.photos/900/500?random=5" alt="Çalışma Alanları"
+                 data-bs-toggle="modal" data-bs-target="#imageModal"
+                 data-image="https://picsum.photos/1200/800?random=5"
+                 data-title="Çalışma Alanları"
+                 data-description="Açık ofis konseptinde tasarlanan modern çalışma alanlarımız.">
+            <div class="carousel-caption d-none d-md-block">
+              <h5>Çalışma Alanları</h5>
+              <p>Ekiplerimizin verimli çalışması için tasarlanmış ofisler</p>
+              <small>📷 Büyük görüntülemek için tıklayın</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sol/Sağ Navigation Butonları -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#galleryCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#galleryCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Grid Gallery -->
+    <div class="grid-gallery">
+      <h3 class="text-center mb-4">Tüm Görseller</h3>
+      <div class="row" id="gridGallery">
+        <div class="col-lg-4 col-md-6">
+          <div class="grid-item" data-bs-toggle="modal" data-bs-target="#imageModal" 
+               data-image="https://picsum.photos/1200/800?random=6"
+               data-title="Sunucu Odası"
+               data-description="24/7 izlenen güvenli sunucu odamız">
+            <img src="https://picsum.photos/400/250?random=6" alt="Sunucu Odası">
+            <div class="grid-overlay">
+              <div class="overlay-content">
+                <h5>Sunucu Odası</h5>
+                <p>🔍 Büyük görüntüle</p>
+              </div>
+            </div>
+            <div class="zoom-indicator">🔍</div>
+          </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+          <div class="grid-item" data-bs-toggle="modal" data-bs-target="#imageModal"
+               data-image="https://picsum.photos/1200/800?random=7"
+               data-title="Network Merkezi"
+               data-description="Şehir geneli network altyapısının yönetim merkezi">
+            <img src="https://picsum.photos/400/250?random=7" alt="Network Merkezi">
+            <div class="grid-overlay">
+              <div class="overlay-content">
+                <h5>Network Merkezi</h5>
+                <p>🔍 Büyük görüntüle</p>
+              </div>
+            </div>
+            <div class="zoom-indicator">🔍</div>
+          </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+          <div class="grid-item" data-bs-toggle="modal" data-bs-target="#imageModal"
+               data-image="https://picsum.photos/1200/800?random=8"
+               data-title="Güvenlik Merkezi"
+               data-description="Şehir güvenlik kameralarının izlendiği kontrol merkezi">
+            <img src="https://picsum.photos/400/250?random=8" alt="Güvenlik Merkezi">
+            <div class="grid-overlay">
+              <div class="overlay-content">
+                <h5>Güvenlik Merkezi</h5>
+                <p>🔍 Büyük görüntüle</p>
+              </div>
+            </div>
+            <div class="zoom-indicator">🔍</div>
+          </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+          <div class="grid-item" data-bs-toggle="modal" data-bs-target="#imageModal"
+               data-image="https://picsum.photos/1200/800?random=9"
+               data-title="Eğitim Salonu"
+               data-description="Personel eğitimleri için özel tasarlanmış salon">
+            <img src="https://picsum.photos/400/250?random=9" alt="Eğitim Salonu">
+            <div class="grid-overlay">
+              <div class="overlay-content">
+                <h5>Eğitim Salonu</h5>
+                <p>🔍 Büyük görüntüle</p>
+              </div>
+            </div>
+            <div class="zoom-indicator">🔍</div>
+          </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+          <div class="grid-item" data-bs-toggle="modal" data-bs-target="#imageModal"
+               data-image="https://picsum.photos/1200/800?random=10"
+               data-title="Arşiv Odası"
+               data-description="Dijital arşiv sistemleri ve yedekleme merkezimiz">
+            <img src="https://picsum.photos/400/250?random=10" alt="Arşiv Odası">
+            <div class="grid-overlay">
+              <div class="overlay-content">
+                <h5>Arşiv Odası</h5>
+                <p>🔍 Büyük görüntüle</p>
+              </div>
+            </div>
+            <div class="zoom-indicator">🔍</div>
+          </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+          <div class="grid-item" data-bs-toggle="modal" data-bs-target="#imageModal"
+               data-image="https://picsum.photos/1200/800?random=11"
+               data-title="Test Laboratuvarı"
+               data-description="Yazılım ve donanım test laboratuvarımız">
+            <img src="https://picsum.photos/400/250?random=11" alt="Test Laboratuvarı">
+            <div class="grid-overlay">
+              <div class="overlay-content">
+                <h5>Test Laboratuvarı</h5>
+                <p>🔍 Büyük görüntüle</p>
+              </div>
+            </div>
+            <div class="zoom-indicator">🔍</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Modal -->
+  <div class="modal fade" id="imageModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+          <button type="button" class="modal-close" data-bs-dismiss="modal">&times;</button>
+          <button class="modal-nav prev" id="prevImage">‹</button>
+          <button class="modal-nav next" id="nextImage">›</button>
+          
+          <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <div>Yükleniyor...</div>
+          </div>
+          
+          <img id="modalImage" class="modal-image" src="" alt="">
+          
+          <div class="modal-info">
+            <h5 id="modalTitle"></h5>
+            <p id="modalDescription"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-dark text-white text-center py-3 mt-5">
+    <div class="container">
+      <p class="mb-0">&copy; 2025 Sakarya Büyükşehir Belediyesi - Bilgi İşlem Dairesi</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Galeri JavaScript Fonksiyonları
+    class GalleryManager {
+      constructor() {
+        this.currentImageIndex = 0;
+        this.images = [];
+        this.modal = null;
+        this.modalImage = null;
+        this.modalTitle = null;
+        this.modalDescription = null;
+        this.loading = null;
+        
+        this.init();
+      }
+      
+      init() {
+        // Modal elementlerini al
+        this.modal = document.getElementById('imageModal');
+        this.modalImage = document.getElementById('modalImage');
+        this.modalTitle = document.getElementById('modalTitle');
+        this.modalDescription = document.getElementById('modalDescription');
+        this.loading = document.getElementById('loading');
+        
+        // Tüm tıklanabilir resimleri topla
+        this.collectImages();
+        
+        // Event listener'ları ekle
+        this.addEventListeners();
+        
+        // Carousel otomatik oynatma kontrolü
+        this.setupCarouselControls();
+      }
+      
+      collectImages() {
+        // Hem carousel hem de grid'deki resimleri topla
+        const clickableImages = document.querySelectorAll('[data-bs-toggle="modal"][data-image]');
+        
+        this.images = Array.from(clickableImages).map((img, index) => ({
+          element: img,
+          image: img.dataset.image,
+          title: img.dataset.title,
+          description: img.dataset.description,
+          index: index
+        }));
+      }
+      
+      addEventListeners() {
+        // Modal açılma eventi
+        this.modal.addEventListener('show.bs.modal', (e) => {
+          const trigger = e.relatedTarget;
+          this.currentImageIndex = this.images.findIndex(img => img.element === trigger);
+          this.showImage(this.currentImageIndex);
+        });
+        
+        // Navigation butonları
+        document.getElementById('prevImage').addEventListener('click', () => {
+          this.previousImage();
+        });
+        
+        document.getElementById('nextImage').addEventListener('click', () => {
+          this.nextImage();
+        });
+        
+        // Klavye navigasyonu
+        document.addEventListener('keydown', (e) => {
+          if (this.modal.classList.contains('show')) {
+            switch(e.key) {
+              case 'ArrowLeft':
+                this.previousImage();
+                break;
+              case 'ArrowRight':
+                this.nextImage();
+                break;
+              case 'Escape':
+                bootstrap.Modal.getInstance(this.modal).hide();
+                break;
+            }
+          }
+        });
+        
+        // Modal image yükleme eventi
+        this.modalImage.addEventListener('load', () => {
+          this.hideLoading();
+        });
+        
+        this.modalImage.addEventListener('error', () => {
+          this.hideLoading();
+          this.modalImage.alt = 'Resim yüklenemedi';
+        });
+      }
+      
+      showImage(index) {
+        if (index < 0 || index >= this.images.length) return;
+        
+        this.showLoading();
+        
+        const imageData = this.images[index];
+        
+        // Resim bilgilerini güncelle
+        this.modalImage.src = imageData.image;
+        this.modalImage.alt = imageData.title;
+        this.modalTitle.textContent = imageData.title;
+        this.modalDescription.textContent = imageData.description;
+        
+        this.currentImageIndex = index;
+      }
+      
+      nextImage() {
+        const nextIndex = (this.currentImageIndex + 1) % this.images.length;
+        this.showImage(nextIndex);
+      }
+      
+      previousImage() {
+        const prevIndex = (this.currentImageIndex - 1 + this.images.length) % this.images.length;
+        this.showImage(prevIndex);
+      }
+      
+      showLoading() {
+        this.loading.style.display = 'block';
+        this.modalImage.style.opacity = '0.5';
+      }
+      
+      hideLoading() {
+        this.loading.style.display = 'none';
+        this.modalImage.style.opacity = '1';
+      }
+      
+      setupCarouselControls() {
+        const carousel = new bootstrap.Carousel('#galleryCarousel');
+        const carouselElement = document.getElementById('galleryCarousel');
+        
+        // Mouse ile hover yapınca durdur
+        carouselElement.addEventListener('mouseenter', function() {
+          carousel.pause();
+        });
+        
+        // Mouse ayrılınca devam ettir
+        carouselElement.addEventListener('mouseleave', function() {
+          carousel.cycle();
+        });
+      }
+    }
+    
+    // Sayfa yüklendiğinde galeri manager'ı başlat
+    document.addEventListener('DOMContentLoaded', function() {
+      new GalleryManager();
+      
+      // Grid hover efektleri
+      const gridItems = document.querySelectorAll('.grid-item');
+      gridItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+          this.style.transform = 'translateY(-5px) scale(1.02)';
+        });
+        
+        item.addEventListener('mouseleave', function() {
+          this.style.transform = 'translateY(0) scale(1)';
+        });
+      });
+      
+      // Lazy loading effect (opsiyonel)
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '50px 0px'
+      };
+      
+      const imageObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const img = entry.target;
+            if (img.dataset.src) {
+              img.src = img.dataset.src;
+              img.removeAttribute('data-src');
+              imageObserver.unobserve(img);
+            }
+          }
+        });
+      }, observerOptions);
+      
+      // Tüm lazy load resimlerini gözlemle
+      document.querySelectorAll('img[data-src]').forEach(img => {
+        imageObserver.observe(img);
+      });
+    });
+  </script>
+</body>
+</html>
