@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giriş | Sakarya Büyükşehir Belediyesi</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .login-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      width: 100%;
+      max-width: 450px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .login-header h2 {
+      color: #333;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .login-header p {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .required::after {
+      content: " *";
+      color: #dc3545;
+      font-weight: bold;
+    }
+
+    .input-group {
+      position: relative;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #666;
+      z-index: 2;
+    }
+
+    .form-control {
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      padding: 15px 15px 15px 45px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background: white;
+    }
+
+    .form-control:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+      outline: 0;
+    }
+
+    .form-control.is-valid {
+      border-color: #198754;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='m2.3 6.73.94-.94 1.38 1.38L7.5 4.1 6.56 3.15 3.94 5.77z'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 15px center;
+      background-size: 16px;
+    }
+
+    .form-control.is-invalid {
+      border-color: #dc3545;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 4.6 1.4 1.4 1.4-1.4M5.8 7.4l1.4-1.4 1.4 1.4'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 15px center;
+      background-size: 16px;
+    }
+
+    .error-message {
+      color: #dc3545;
+      font-size: 13px;
+      margin-top: 6px;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #666;
+      z-index: 3;
+      transition: color 0.3s ease;
+    }
+
+    .password-toggle:hover {
+      color: #333;
+    }
+
+    .login-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      padding: 15px;
+      border-radius: 12px;
+      color: white;
+      font-weight: 600;
+      font-size: 16px;
+      width: 100%;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .login-btn:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .login-btn .spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid transparent;
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 10px;
+    }
+
+    .login-btn.loading .spinner {
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .alert-custom {
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      display: none;
+      animation: slideDown 0.5s ease;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .forgot-password {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .forgot-password a {
+      color: #667eea;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .forgot-password a:hover {
+      text-decoration: underline;
+    }
+
+    .back-home {
+      text-align: center;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+    }
+
+    .back-home a {
+      color: #666;
+      text-decoration: none;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .back-home a:hover {
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-header">
+      <h2><i class="fas fa-shield-alt"></i> Giriş Yap</h2>
+      <p>Sakarya Büyükşehir Belediyesi - Bilgi İşlem</p>
+    </div>
+
+    <!-- Alert Messages -->
+    <div id="errorAlert" class="alert alert-danger alert-custom">
+      <i class="fas fa-exclamation-circle"></i>
+      <span id="errorMessage">Bir hata oluştu!</span>
+    </div>
+
+    <div id="successAlert" class="alert alert-success alert-custom">
+      <i class="fas fa-check-circle"></i>
+      <span>Giriş başarılı! Yönlendiriliyorsunuz...</span>
+    </div>
+
+    <form id="loginForm" novalidate>
+      <div class="form-group">
+        <label for="email" class="form-label required">E-posta</label>
+        <div class="input-group">
+          <i class="fas fa-envelope input-icon"></i>
+          <input type="email" class="form-control" id="email" name="email" 
+                 placeholder="ornek@sakarya.bel.tr" required autocomplete="email">
+        </div>
+        <div class="error-message" id="emailError"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="form-label required">Şifre</label>
+        <div class="input-group">
+          <i class="fas fa-lock input-icon"></i>
+          <input type="password" class="form-control" id="password" name="password" 
+                 placeholder="Şifrenizi giriniz" required autocomplete="current-password">
+          <i class="fas fa-eye password-toggle" id="passwordToggle"></i>
+        </div>
+        <div class="error-message" id="passwordError"></div>
+      </div>
+
+      <div class="form-group">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="rememberMe" name="rememberMe">
+          <label class="form-check-label" for="rememberMe">
+            Beni hatırla
+          </label>
+        </div>
+      </div>
+
+      <button type="submit" class="login-btn" id="loginBtn">
+        <span class="spinner"></span>
+        <span class="btn-text">Giriş Yap</span>
+      </button>
+    </form>
+
+    <div class="forgot-password">
+      <a href="#" id="forgotPasswordLink">Şifremi unuttum</a>
+    </div>
+
+    <div class="back-home">
+      <a href="index.html">
+        <i class="fas fa-arrow-left"></i>
+        Ana sayfaya dön
+      </a>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    class LoginValidator {
+      constructor() {
+        this.form = document.getElementById('loginForm');
+        this.emailField = document.getElementById('email');
+        this.passwordField = document.getElementById('password');
+        this.loginBtn = document.getElementById('loginBtn');
+        this.isSubmitting = false;
+        
+        this.init();
+      }
+      
+      init() {
+        this.setupEventListeners();
+        this.setupPasswordToggle();
+      }
+      
+      setupEventListeners() {
+        // E-posta validasyonu
+        this.emailField.addEventListener('blur', () => {
+          this.validateEmail();
+        });
+        
+        this.emailField.addEventListener('input', () => {
+          if (this.emailField.classList.contains('is-invalid')) {
+            this.validateEmail();
+          }
+        });
+        
+        // Şifre validasyonu
+        this.passwordField.addEventListener('blur', () => {
+          this.validatePassword();
+        });
+        
+        this.passwordField.addEventListener('input', () => {
+          if (this.passwordField.classList.contains('is-invalid')) {
+            this.validatePassword();
+          }
+        });
+        
+        // Form submit
+        this.form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          this.handleLogin();
+        });
+        
+        // Şifremi unuttum
+        document.getElementById('forgotPasswordLink').addEventListener('click', (e) => {
+          e.preventDefault();
+          this.handleForgotPassword();
+        });
+      }
+      
+      setupPasswordToggle() {
+        const passwordToggle = document.getElementById('passwordToggle');
+        passwordToggle.addEventListener('click', () => {
+          const type = this.passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+          this.passwordField.setAttribute('type', type);
+          
+          // İkon değiştir
+          passwordToggle.classList.toggle('fa-eye');
+          passwordToggle.classList.toggle('fa-eye-slash');
+        });
+      }
+      
+      validateEmail() {
+        const email = this.emailField.value.trim();
+        const emailError = document.getElementById('emailError');
+        let isValid = true;
+        let errorMessage = '';
+        
+        // Boş kontrol
+        if (email === '') {
+          isValid = false;
+          errorMessage = 'E-posta adresi zorunludur';
+        }
+        // E-posta format kontrolü
+        else if (!this.isValidEmail(email)) {
+          isValid = false;
+          errorMessage = 'Geçerli bir e-posta adresi giriniz';
+        }
+        // Kurumsal e-posta kontrolü (isteğe bağlı)
+        else if (!email.endsWith('@sakarya.bel.tr')) {
+          isValid = false;
+          errorMessage = 'Lütfen kurumsal e-posta adresinizi kullanınız (@sakarya.bel.tr)';
+        }
+        
+        this.showFieldResult(this.emailField, emailError, isValid, errorMessage);
+        return isValid;
+      }
+      
+      validatePassword() {
+        const password = this.passwordField.value;
+        const passwordError = document.getElementById('passwordError');
+        let isValid = true;
+        let errorMessage = '';
+        
+        // Boş kontrol
+        if (password === '') {
+          isValid = false;
+          errorMessage = 'Şifre zorunludur';
+        }
+        // Minimum uzunluk kontrolü
+        else if (password.length < 6) {
+          isValid = false;
+          errorMessage = 'Şifre en az 6 karakter olmalıdır';
+        }
+        
+        this.showFieldResult(this.passwordField, passwordError, isValid, errorMessage);
+        return isValid;
+      }
+      
+      isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+      }
+      
+      showFieldResult(field, errorElement, isValid, errorMessage) {
+        // CSS sınıflarını güncelle
+        field.classList.remove('is-valid', 'is-invalid');
+        field.classList.add(isValid ? 'is-valid' : 'is-invalid');
+        
+        // Hata mesajını göster/gizle
+        errorElement.textContent = errorMessage;
+        errorElement.classList.toggle('show', !isValid);
+      }
+      
+      validateForm() {
+        const emailValid = this.validateEmail();
+        const passwordValid = this.validatePassword();
+        
+        return emailValid && passwordValid;
+      }
+      
+      async handleLogin() {
+        if (this.isSubmitting) return;
+        
+        // Form validasyonu
+        if (!this.validateForm()) {
+          this.showAlert('error', 'Lütfen form hatalarını düzeltin');
+          return;
+        }
+        
+        // Loading durumu
+        this.setLoadingState(true);
+        this.isSubmitting = true;
+        
+        try {
+          // Form verilerini topla
+          const formData = {
+            email: this.emailField.value.trim(),
+            password: this.passwordField.value,
+            rememberMe: document.getElementById('rememberMe').checked
+          };
+          
+          // API çağrısı
+          const result = await this.loginUser(formData);
+          
+          if (result.success) {
+            this.showAlert('success');
+            // Başarılı giriş sonrası yönlendirme
+            setTimeout(() => {
+              window.location.href = result.redirectUrl || 'dashboard.html';
+            }, 2000);
+          } else {
+            this.showAlert('error', result.message || 'Giriş başarısız');
+          }
+          
+        } catch (error) {
+          console.error('Login error:', error);
+          this.showAlert('error', 'Bağlantı hatası. Lütfen tekrar deneyiniz.');
+        } finally {
+          this.setLoadingState(false);
+          this.isSubmitting = false;
+        }
+      }
+      
+      async loginUser(data) {
+        // Bu kısım PHP backend ile entegre edilecek
+        // Şimdilik simülasyon
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            // Demo amaçlı - gerçek uygulamada PHP'den gelecek
+            if (data.email === 'admin@sakarya.bel.tr' && data.password === '123456') {
+              resolve({
+                success: true,
+                message: 'Giriş başarılı',
+                redirectUrl: 'dashboard.html',
+                user: {
+                  name: 'Admin User',
+                  email: data.email
+                }
+              });
+            } else {
+              resolve({
+                success: false,
+                message: 'E-posta veya şifre hatalı'
+              });
+            }
+          }, 1500);
+        });
+      }
+      
+      setLoadingState(loading) {
+        this.loginBtn.disabled = loading;
+        this.loginBtn.classList.toggle('loading', loading);
+        
+        const btnText = this.loginBtn.querySelector('.btn-text');
+        btnText.textContent = loading ? 'Giriş yapılıyor...' : 'Giriş Yap';
+      }
+      
+      showAlert(type, message = '') {
+        const errorAlert = document.getElementById('errorAlert');
+        const successAlert = document.getElementById('successAlert');
+        
+        // Tüm alertleri gizle
+        errorAlert.style.display = 'none';
+        successAlert.style.display = 'none';
+        
+        if (type === 'error') {
+          document.getElementById('errorMessage').textContent = message;
+          errorAlert.style.display = 'block';
+        } else if (type === 'success') {
+          successAlert.style.display = 'block';
+        }
+      }
+      
+      handleForgotPassword() {
+        const email = this.emailField.value.trim();
+        if (email && this.isValidEmail(email)) {
+          // E-posta varsa ve geçerliyse şifre sıfırlama isteği gönder
+          alert(`Şifre sıfırlama bağlantısı ${email} adresine gönderilecek.`);
+        } else {
+          // E-posta yoksa veya geçersizse önce e-posta girmesini iste
+          alert('Lütfen önce geçerli bir e-posta adresi giriniz.');
+          this.emailField.focus();
+        }
+      }
+    }
+    
+    // Sayfa yüklendiğinde validatörü başlat
+    document.addEventListener('DOMContentLoaded', () => {
+      new LoginValidator();
+    });
+  </script>
+</body>
+</html>
