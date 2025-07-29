@@ -1,0 +1,51 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    text-align: center;
+    padding: 20px;
+}
+/* Kart kutusu animasyonlu ve köşeleri yumuşak olsun */
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Hover (üzerine gelince) büyüsün ve gölge efekti verilsin */
+.card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Karttaki resim düzgün orantılı görünmeli */
+.card-img-top {
+  height: 200px; /* Sabit yükseklik */
+  object-fit: cover; /* Resmi düzgün kırpar, taşma olmaz */
+  border-bottom: 1px solid #ccc;
+}
+
+/* Kart başlığı stil ayarı */
+.card-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Kart açıklama metni */
+.card-text {
+  font-size: 0.95rem;
+  color: #555;
+}
+/* Kartların dış boşluklarını ayarlamak */
+.container {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+/* Tablet ve daha büyük ekranlarda boşluğu arttır */
+@media (min-width: 768px) {
+  .container {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+}
