@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>İletişim | Sakarya Büyükşehir Belediyesi</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Form Stilleri */
+    .contact-form {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #f8f9fa;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+      position: relative;
+    }
+    
+    .form-label {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+      display: block;
+    }
+    
+    .required::after {
+      content: " *";
+      color: #dc3545;
+      font-weight: bold;
+    }
+    
+    .form-control {
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      padding: 12px 15px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background: white;
+    }
+    
+    .form-control:focus {
+      border-color: #0d6efd;
+      box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+      outline: 0;
+    }
+    
+    /* Validasyon Stilleri */
+    .form-control.is-valid {
+      border-color: #198754;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='m2.3 6.73.94-.94 1.38 1.38L7.5 4.1 6.56 3.15 3.94 5.77z'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right calc(0.375em + 0.1875rem) center;
+      background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+      padding-right: calc(1.5em + 0.75rem);
+    }
+    
+    .form-control.is-invalid {
+      border-color: #dc3545;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 4.6 1.4 1.4 1.4-1.4M5.8 7.4l1.4-1.4 1.4 1.4'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right calc(0.375em + 0.1875rem) center;
+      background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+      padding-right: calc(1.5em + 0.75rem);
+    }
+    
+    .error-message {
+      color: #dc3545;
+      font-size: 14px;
+      margin-top: 5px;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .success-message {
+      color: #198754;
+      font-size: 14px;
+      margin-top: 5px;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .error-message.show,
+    .success-message.show {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Submit Button */
+    .submit-btn {
+      background: linear-gradient(45deg, #0d6efd, #0b5ed7);
+      border: none;
+      padding: 15px 40px;
+      border-radius: 50px;
+      color: white;
+      font-weight: 600;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(13, 110, 253, 0.3);
+    }
+    
+    .submit-btn:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .submit-btn .spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid transparent;
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 10px;
+    }
+    
+    .submit-btn.loading .spinner {
+      display: inline-block;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Success/Error Alerts */
+    .alert-custom {
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      display: none;
+      animation: slideDown 0.5s ease;
+    }
+    
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Karakter Sayacı */
+    .char-counter {
+      text-align: right;
+      font-size: 12px;
+      color: #6c757d;
+      margin-top: 5px;
+    }
+    
+    .char-counter.warning {
+      color: #fd7e14;
+    }
+    
+    .char-counter.danger {
+      color: #dc3545;
+    }
+    
+    /* Telefon Input Mask */
+    .phone-input {
+      position: relative;
+    }
+    
+    .phone-prefix {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6c757d;
+      font-weight: 500;
+      pointer-events: none;
+      z-index: 2;
+    }
+    
+    .phone-input .form-control {
+      padding-left: 60px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">SBB Bilgi İşlem</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">Anasayfa</a></li>
+          <li class="nav-item"><a class="nav-link" href="hakkimizda.html">Hakkımızda</a></li>
+          <li class="nav-item"><a class="nav-link" href="mudurlukler.html">Müdürlüklerimiz</a></li>
+          <li class="nav-item"><a class="nav-link" href="projeler.html">Projelerimiz</a></li>
+          <li class="nav-item"><a class="nav-link" href="galeri.html">Galeri</a></li>
+          <li class="nav-item"><a class="nav-link active" href="iletisim.html">İletişim</a></li>
+          <li class="nav-item"><a class="nav-link" href="login.php">Giriş</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- SAYFA İÇERİĞİ -->
+  <div class="container mt-5">
+    <h1 class="text-center mb-5">İletişim</h1>
+    
+    <!-- Success/Error Alerts -->
+    <div id="successAlert" class="alert alert-success alert-custom">
+      <h5><i class="fas fa-check-circle"></i> Başarılı!</h5>
+      <p>Mesajınız başarıyla gönderildi. En kısa sürede size dönüş yapacağız.</p>
+    </div>
+    
+    <div id="errorAlert" class="alert alert-danger alert-custom">
+      <h5><i class="fas fa-exclamation-circle"></i> Hata!</h5>
+      <p id="errorMessage">Bir hata oluştu. Lütfen tekrar deneyiniz.</p>
+    </div>
+
+    <div class="row">
+      <!-- İletişim Bilgileri -->
+      <div class="col-lg-4 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h4 class="card-title">İletişim Bilgileri</h4>
+            <hr>
+            <p><strong>Adres:</strong><br>
+            Sakarya Büyükşehir Belediyesi<br>
+            Bilgi İşlem Daire Başkanlığı<br>
+            54100 Sakarya/Türkiye</p>
+            
+            <p><strong>Telefon:</strong><br>
+            +90 (264) 123 45 67</p>
+            
+            <p><strong>E-posta:</strong><br>
+            bilgiislem@sakarya.bel.tr</p>
+            
+            <p><strong>Çalışma Saatleri:</strong><br>
+            Pazartesi - Cuma: 08:00 - 17:00</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- İletişim Formu -->
+      <div class="col-lg-8">
+        <form id="contactForm" class="contact-form" novalidate>
+          
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="firstName" class="form-label required">Ad</label>
+                <input type="text" class="form-control" id="firstName" name="firstName" 
+                       minlength="2" maxlength="50" required>
+                <div class="error-message" data-field="firstName"></div>
+                <div class="success-message" data-field="firstName">✓ Geçerli</div>
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="lastName" class="form-label required">Soyad</label>
+                <input type="text" class="form-control" id="lastName" name="lastName" 
+                       minlength="2" maxlength="50" required>
+                <div class="error-message" data-field="lastName"></div>
+                <div class="success-message" data-field="lastName">✓ Geçerli</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email" class="form-label required">E-posta</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+            <div class="error-message" data-field="email"></div>
+            <div class="success-message" data-field="email">✓ Geçerli e-posta adresi</div>
+          </div>
+
+          <div class="form-group">
+            <label for="phone" class="form-label">Telefon</label>
+            <div class="phone-input">
+              <span class="phone-prefix">+90</span>
+              <input type="tel" class="form-control" id="phone" name="phone" 
+                     placeholder="(5XX) XXX XX XX" maxlength="15">
+              <div class="error-message" data-field="phone"></div>
+              <div class="success-message" data-field="phone">✓ Geçerli telefon numarası</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="subject" class="form-label required">Konu</label>
+            <select class="form-control" id="subject" name="subject" required>
+              <option value="">Konu seçiniz...</option>
+              <option value="genel">Genel Bilgi</option>
+              <option value="teknik">Teknik Destek</option>
+              <option value="proje">Proje Önerisi</option>
+              <option value="sikayet">Şikayet</option>
+              <option value="oneri">Öneri</option>
+              <option value="diger">Diğer</option>
+            </select>
+            <div class="error-message" data-field="subject"></div>
+            <div class="success-message" data-field="subject">✓ Seçildi</div>
+          </div>
+
+          <div class="form-group">
+            <label for="message" class="form-label required">Mesaj</label>
+            <textarea class="form-control" id="message" name="message" rows="6" 
+                      minlength="10" maxlength="1000" required 
+                      placeholder="Mesajınızı buraya yazınız..."></textarea>
+            <div class="char-counter">
+              <span id="charCount">0</span> / 1000 karakter
+            </div>
+            <div class="error-message" data-field="message"></div>
+            <div class="success-message" data-field="message">✓ Geçerli</div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="privacy" name="privacy" required>
+              <label class="form-check-label" for="privacy">
+                <a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal">Kişisel Verilerin Korunması</a> 
+                hakkındaki bilgilendirmeyi okudum ve kabul ediyorum. <span class="text-danger">*</span>
+              </label>
+              <div class="error-message" data-field="privacy"></div>
+            </div>
+          </div>
+
+          <div class="text-center">
+            <button type="submit" class="submit-btn" id="submitBtn">
+              <span class="spinner"></span>
+              <span class="btn-text">Mesajı Gönder</span>
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Privacy Modal -->
+  <div class="modal fade" id="privacyModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Kişisel Verilerin Korunması</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p>Bu form aracılığıyla paylaştığınız kişisel verileriniz, 6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında işlenmektedir.</p>
+          <p>Verileriniz sadece sizinle iletişim kurmak amacıyla kullanılacak ve üçüncü taraflarla paylaşılmayacaktır.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Anladım</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-dark text-white text-center py-3 mt-5">
+    <div class="container">
+      <p class="mb-0">&copy; 2025 Sakarya Büyükşehir Belediyesi - Bilgi İşlem Dairesi</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Form Validasyon Sınıfı
+    class FormValidator {
+      constructor(formId) {
+        this.form = document.getElementById(formId);
+        this.fields = {};
+        this.isSubmitting = false;
+        
+        if (!this.form) {
+          console.error('Form bulunamadı:', formId);
+          return;
+        }
+        
+        this.init();
+      }
+      
+      init() {
+        this.setupFields();
+        this.setupEventListeners();
+        this.setupPhoneMask();
+        this.setupCharCounter();
+      }
+      
+      setupFields() {
+        // Validasyon kurallarını tanımla
+        this.fields = {
+          firstName: {
+            element: document.getElementById('firstName'),
+            rules: ['required', 'minLength:2', 'maxLength:50', 'noNumbers'],
+            messages: {
+              required: 'Ad alanı zorunludur',
+              minLength: 'Ad en az 2 karakter olmalıdır',
+              maxLength: 'Ad en fazla 50 karakter olabilir',
+              noNumbers: 'Ad sadece harflerden oluşmalıdır'
+            }
+          },
+          lastName: {
+            element: document.getElementById('lastName'),
+            rules: ['required', 'minLength:2', 'maxLength:50', 'noNumbers'],
+            messages: {
+              required: 'Soyad alanı zorunludur',
+              minLength: 'Soyad en az 2 karakter olmalıdır',
+              maxLength: 'Soyad en fazla 50 karakter olabilir',
+              noNumbers: 'Soyad sadece harflerden oluşmalıdır'
+            }
+          },
+          email: {
+            element: document.getElementById('email'),
+            rules: ['required', 'email'],
+            messages: {
+              required: 'E-posta adresi zorunludur',
+              email: 'Geçerli bir e-posta adresi giriniz'
+            }
+          },
+          phone: {
+            element: document.getElementById('phone'),
+            rules: ['phone'],
+            messages: {
+              phone: 'Geçerli bir telefon numarası giriniz (5XX XXX XX XX)'
+            }
+          },
+          subject: {
+            element: document.getElementById('subject'),
+            rules: ['required'],
+            messages: {
+              required: 'Lütfen bir konu seçiniz'
+            }
+          },
+          message: {
+            element: document.getElementById('message'),
+            rules: ['required', 'minLength:10', 'maxLength:1000'],
+            messages: {
+              required: 'Mesaj alanı zorunludur',
+              minLength: 'Mesaj en az 10 karakter olmalıdır',
+              maxLength: 'Mesaj en fazla 1000 karakter olabilir'
+            }
+          },
+          privacy: {
+            element: document.getElementById('privacy'),
+            rules: ['required'],
+            messages: {
+              required: 'Kişisel verilerin korunması hakkındaki bilgilendirmeyi kabul etmelisiniz'
+            }
+          }
+        };
+      }
+      
+      setupEventListeners() {
+        // Her field için olay dinleyicileri
+        Object.keys(this.fields).forEach(fieldName => {
+          const field = this.fields[fieldName];
+          if (field.element) {
+            // Real-time validasyon
+            field.element.addEventListener('blur', () => {
+              this.validateField(fieldName);
+            });
+            
+            field.element.addEventListener('input', () => {
+              // Hatalı fieldları temizle
+              if (field.element.classList.contains('is-invalid')) {
+                this.validateField(fieldName);
+              }
+            });
+          }
+        });
+        
+        // Form submit
+        this.form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          this.handleSubmit();
+        });
+      }
+      
+      setupPhoneMask() {
+        const phoneInput = document.getElementById('phone');
+        if (phoneInput) {
+          phoneInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 0) {
+              if (value.length <= 3) {
+                value = `(${value}`;
+              } else if (value.length <= 6) {
+                value = `(${value.slice(0, 3)}) ${value.slice(3)}`;
+              } else if (value.length <= 8) {
+                value = `(${value.slice(0, 3)}) ${value.slice(3, 6)} ${value.slice(6)}`;
+              } else {
+                value = `(${value.slice(0, 3)}) ${value.slice(3, 6)} ${value.slice(6, 8)} ${value.slice(8, 10)}`;
+              }
+            }
+            e.target.value = value;
+          });
+        }
+      }
+      
+      setupCharCounter() {
+        const messageInput = document.getElementById('message');
+        const charCount = document.getElementById('charCount');
+        
+        if (messageInput && charCount) {
+          messageInput.addEventListener('input', () => {
+            const count = messageInput.value.length;
+            charCount.textContent = count;
+            
+            // Renk değişimleri
+            charCount.parentElement.classList.remove('warning', 'danger');
+            if (count > 800) {
+              charCount.parentElement.classList.add('danger');
+            } else if (count > 600) {
+              charCount.parentElement.classList.add('warning');
+            }
+          });
+        }
+      }
+      
+      validateField(fieldName) {
+        const field = this.fields[fieldName];
+        if (!field || !field.element) return true;
+        
+        const value = field.element.type === 'checkbox' ? field.element.checked : field.element.value.trim();
+        let isValid = true;
+        let errorMessage = '';
+        
+        // Kuralları kontrol et
+        for (const rule of field.rules) {
+          const [ruleName, ruleValue] = rule.split(':');
+          
+          switch (ruleName) {
+            case 'required':
+              if (field.element.type === 'checkbox') {
+                isValid = value === true;
+              } else {
+                isValid = value !== '';
+              }
+              if (!isValid) errorMessage = field.messages.required;
+              break;
+              
+            case 'email':
+              if (value !== '') {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                isValid = emailRegex.test(value);
+                if (!isValid) errorMessage = field.messages.email;
+              }
+              break;
+              
+            case 'phone':
+              if (value !== '') {
+                const phoneRegex = /^\(\d{3}\) \d{3} \d{2} \d{2}$/;
+                isValid = phoneRegex.test(value);
+                if (!isValid) errorMessage = field.messages.phone;
+              }
+              break;
+              
+            case 'minLength':
+              if (value !== '' && value.length < parseInt(ruleValue)) {
+                isValid = false;
+                errorMessage = field.messages.minLength;
+              }
+              break;
+              
+            case 'maxLength':
+              if (value.length > parseInt(ruleValue)) {
+                isValid = false;
+                errorMessage = field.messages.maxLength;
+              }
+              break;
+              
+            case 'noNumbers':
+              if (value !== '') {
+                const noNumbersRegex = /^[a-zA-ZçğıöşüÇĞIİÖŞÜ\s]+$/;
+                isValid = noNumbersRegex.test(value);
+                if (!isValid) errorMessage = field.messages.noNumbers;
+              }
+              break;
+          }
+          
+          if (!isValid) break;
+        }
+        
+        this.showFieldResult(fieldName, isValid, errorMessage);
+        return isValid;
+      }
+      
+      showFieldResult(fieldName, isValid, errorMessage) {
+        const field = this.fields[fieldName];
+        const errorElement = document.querySelector(`[data-field="${fieldName}"].error-message`);
+        const successElement = document.querySelector(`[data-field="${fieldName}"].success-message`);
+        
+        // CSS sınıflarını güncelle
+        field.element.classList.remove('is-valid', 'is-invalid');
+        field.element.classList.add(isValid ? 'is-valid' : 'is-invalid');
+        
+        // Mesajları göster/gizle
+        if (errorElement) {
+          errorElement.textContent = errorMessage;
+          errorElement.classList.toggle('show', !isValid && errorMessage !== '');
+        }
+        
+        if (successElement) {
+          successElement.classList.toggle('show', isValid && field.element.value.trim() !== '');
+        }
+      }
+      
+      validateAllFields() {
+        let isFormValid = true;
+        
+        Object.keys(this.fields).forEach(fieldName => {
+          const fieldValid = this.validateField(fieldName);
+          if (!fieldValid) {
+            isFormValid = false;
+          }
+        });
+        
+        return isFormValid;
+      }
+      
+      async handleSubmit() {
+        if (this.isSubmitting) return;
+        
+        const isValid = this.validateAllFields();
+        
+        if (!isValid) {
+          this.showAlert('error', 'Lütfen form hatalarını düzeltin ve tekrar deneyiniz.');
+          // İlk hatalı alana scroll
+          const firstError = this.form.querySelector('.is-invalid');
+          if (firstError) {
+            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            firstError.focus();
+          }
+          return;
+        }
+        
+        // Loading durumu
+        this.setSubmitButtonLoading(true);
+        this.isSubmitting = true;
+        
+        try {
+          // Form verilerini topla
+          const formData = new FormData(this.form);
+          const data = Object.fromEntries(formData.entries());
+          
+          // API çağrısı simülasyonu
+          await this.submitForm(data);
+          
+          // Başarılı
+          this.showAlert('success');
+          this.form.reset();
+          this.clearAllValidations();
+          
+        } catch (error) {
+          console.error('Form gönderim hatası:', error);
+          this.showAlert('error', 'Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyiniz.');
+        } finally {
+          this.setSubmitButtonLoading(false);
+          this.isSubmitting = false;
+        }
+      }
+      
+      async submitForm(data) {
+        // Gerçek API çağrısı burada yapılacak
+        // Şimdilik simülasyon
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            // %90 başarı oranı simülasyonu
+            if (Math.random() > 0.1) {
+              resolve({ success: true });
+            } else {
+              reject(new Error('Server error'));
+            }
+          }, 2000);
+        });
+      }
+      
+      setSubmitButtonLoading(loading) {
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = submitBtn.querySelector('.btn-text');
+        
+        submitBtn.disabled = loading;
+        submitBtn.classList.toggle('loading', loading);
+        
+        if (loading) {
+          btnText.textContent = 'Gönderiliyor...';
+        } else {
+          btnText.textContent = 'Mesajı Gönder';
+        }
+      }
+      
+      showAlert(type, message = '') {
+        const successAlert = document.getElementById('successAlert');
+        const errorAlert = document.getElementById('errorAlert');
+        
+        // Tüm alertleri gizle
+        successAlert.style.display = 'none';
+        errorAlert.style.display = 'none';
+        
+        if (type === 'success') {
+          successAlert.style.display = 'block';
+          successAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else if (type === 'error') {
+          if (message) {
+            document.getElementById('errorMessage').textContent = message;
+          }
+          errorAlert.style.display = 'block';
+          errorAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+      
+      clearAllValidations() {
+        Object.keys(this.fields).forEach(fieldName => {
+          const field = this.fields[fieldName];
+          field.element.classList.remove('is-valid', 'is-invalid');
+          
+          const errorElement = document.querySelector(`[data-field="${fieldName}"].error-message`);
+          const successElement = document.querySelector(`[data-field="${fieldName}"].success-message`);
+          
+          if (errorElement) errorElement.classList.remove('show');
+          if (successElement) successElement.classList.remove('show');
+        });
+        
+        // Karakter sayacını sıfırla
+        const charCount = document.getElementById('charCount');
+        if (charCount) {
+          charCount.textContent = '0';
+          charCount.parentElement.classList.remove('warning', 'danger');
+        }
